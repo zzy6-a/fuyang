@@ -1106,3 +1106,9 @@ body.wm-body{background:#f2f4f7}
 .post .pleft .uid a.undone{color:#8b95a3}
 /* 归档快照里，所有用户名一律按链接显示；点了没页面的由存档自行提示 */
 .post .pleft .uid a[data-dead]:hover{text-decoration:underline}
+
+/* 公告页：作品名 */
+.np-title{font-size:30px;font-weight:700;color:#1c3d66;letter-spacing:6px;text-align:center;
+  margin:2px 0 6px;font-family:SimSun,"宋体",serif}
+.np-sub{text-align:center;color:#8b95a3;font-size:12.5px;letter-spacing:1px;margin-bottom:20px}
+@media (max-width:880px){ .np-title{font-size:24px;letter-spacing:4px} }
