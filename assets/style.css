@@ -988,3 +988,45 @@ body.wm-body{background:#f2f4f7}
   margin:2px 0 6px;font-family:SimSun,"宋体",serif}
 .np-sub{text-align:center;color:#8b95a3;font-size:12.5px;letter-spacing:1px;margin-bottom:20px}
 @media (max-width:880px){ .np-title{font-size:24px;letter-spacing:4px} }
+
+/* ===========================================================
+   站内搜索：异常条目
+   =========================================================== */
+.sresult.egg{background:#fbf9f3;border-left:3px solid #c8a44a}
+.sresult.egg .st{font-weight:700}
+.sresult.egg .st a{color:#8a6a12}
+.sresult.egg .su{color:#ab9c74}
+.sresult.egg .ss{color:#8a7f66}
+
+/* ===========================================================
+   网页时光机 · 未归类条目
+   =========================================================== */
+.wm-entry{background:#fff;border:1px solid #dbe2ea;padding:28px 32px;margin-bottom:20px}
+.wm-entry .kind{font-size:11.5px;color:#8b95a3;letter-spacing:1.5px}
+.wm-entry h1{margin:8px 0 10px;font-size:28px;color:#1c3d66;font-family:Consolas,"Courier New",monospace;letter-spacing:2px}
+.wm-entry .meta{display:flex;flex-wrap:wrap;gap:24px;font-size:12px;color:#8b95a3;
+  border-bottom:1px solid #eef2f7;padding-bottom:13px;margin-bottom:20px}
+.wm-entry h2{font-size:13px;color:#557;margin:26px 0 9px;font-weight:700}
+.wm-entry h2:first-of-type{margin-top:0}
+.wm-entry p{font-size:14px;line-height:2.15;color:#3a3a3a;margin:0 0 12px}
+.wm-entry .lede{font-size:15px;color:#2b3a4a}
+.wm-entry .quote{font-family:SimSun,"宋体",serif;font-size:15px;color:#5a6675;line-height:2.1;
+  background:#fafbfc;border-left:3px solid #dbe2ea;padding:11px 15px;margin:0 0 16px}
+.wm-entry .sign{text-align:right;color:#5a6675;font-size:13.5px;line-height:2.1;margin-top:26px}
+.wm-entry .sign b{color:#1c3d66;font-size:15px}
+.wm-entry .sign a{color:#1a63b4}
+.wm-entry .hintline{color:#a8b2c0;font-size:12px;border-top:1px dashed #eef2f7;padding-top:13px;margin-top:24px;line-height:2}
+.wm-entry .back{display:inline-block;margin-top:6px;color:#1a63b4;font-size:13px}
+
+/* ===========================================================
+   作者署名
+   =========================================================== */
+.author-line{margin-top:16px;padding-top:13px;border-top:1px solid #eef2f7;
+  color:#9aa4b2;font-size:12px;text-align:center;line-height:2}
+.author-line b{color:#5a6675}
+.author-line a{color:#1a63b4}
+.end-author{margin-top:11px;padding-top:11px;border-top:1px solid #eef2f7;
+  color:#b8c0ca;font-size:11.5px;text-align:center;line-height:1.95}
+.end-author b{color:#8b95a3}
+.end-author a{color:#8b95a3}
+@media (max-width:880px){ .wm-entry{padding:20px 16px} .wm-entry h1{font-size:22px} }

@@ -181,9 +181,11 @@
       });
     });
     var dead = DEAD_POOL.slice(0, 2);
+    // 未归类条目：搜到作者账号时，索引里会多出一样不属于这里的东西
+    var egg = /zzy6/i.test(q);
 
     if (head) {
-      head.innerHTML = '搜索 “<b>' + esc(q) + '</b>” 的结果：共找到 ' + (hits.length + dead.length) +
+      head.innerHTML = '搜索 “<b>' + esc(q) + '</b>” 的结果：共找到 ' + (hits.length + dead.length + (egg ? 1 : 0)) +
         ' 条，其中 <b>' + dead.length + '</b> 条已损坏。';
     }
 
@@ -207,7 +209,17 @@
       box.appendChild(d);
     });
 
-    if (!hits.length) {
+    if (egg) {
+      var g = document.createElement('div');
+      g.className = 'sresult egg';
+      g.innerHTML =
+        '<div class="st"><a href="zzy6.html">【未归类】zzy6</a></div>' +
+        '<div class="su">网页时光机 · 未归类条目 · 不属于本吧</div>' +
+        '<div class="ss">这条记录和十二中吧没有任何关系。<br>但它出现在了这个索引里。</div>';
+      box.appendChild(g);
+    }
+
+    if (!hits.length && !egg) {
       var e = document.createElement('div');
       e.className = 'sempty';
       e.innerHTML = '没有找到与 “' + esc(q) + '” 相关的<b>可用</b>结果。<br>' +
@@ -268,6 +280,7 @@
     console.log('%c十二中吧 · 网页存档', 'color:#2b5a9e;font-weight:bold;font-size:14px');
     console.log('%c快照编号 S17-20150317-0031', 'color:#8a8a8a');
     console.log('存档备注：本快照为只读镜像，缺失区域以占位符标记。');
+    console.log('如果你在找一样不存在的东西 —— 试试搜索框。');
     console.log('如果你也在找一个人 —— 她说过她要去很远的地方。');
   }
 
