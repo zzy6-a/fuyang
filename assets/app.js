@@ -266,8 +266,8 @@
   function initConsole() {
     if (!window.console) return;
     console.log('%c十二中吧 · 网页存档', 'color:#2b5a9e;font-weight:bold;font-size:14px');
-    console.log('%c快照编号 S17-20150317-0031 ｜ 数据完整度 12%', 'color:#8a8a8a');
-    console.log('存档备注：核心帖 11 楼的记录在源站即已缺失，与本快照无关。');
+    console.log('%c快照编号 S17-20150317-0031', 'color:#8a8a8a');
+    console.log('存档备注：本快照为只读镜像，缺失区域以占位符标记。');
     console.log('如果你也在找一个人 —— 她说过她要去很远的地方。');
   }
 
