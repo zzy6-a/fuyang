@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>网页时光机 · 非商业网页存档计划</title>
+<meta name="description" content="网页时光机：索引公开网页的历史快照。">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="wm-body">
+
+<div class="wm">
+
+  <div class="wm-head">
+    <div class="lg">网页时光机<small>W A Y B A C K &nbsp; A R C H I V E</small></div>
+    <span class="sp"></span>
+    <div class="nav">关于<span style="color:#4a5a6e">|</span><a href="#">帮助</a><a href="#">统计</a></div>
+  </div>
+
+  <div class="wm-search">
+    <h1>浏览历史快照</h1>
+    <div class="sub">输入网址，或直接输入站点名称 / 贴吧名。</div>
+    <div class="wm-row">
+      <input type="text" id="wmInput" autocomplete="off" spellcheck="false" placeholder="输入网址或站点名称">
+      <button id="wmBtn">浏 览</button>
+    </div>
+    <div class="wm-hint">例：输入一个吧的名字，就能查到有没有人抓取过它的列表页。</div>
+    <div class="wm-msg" id="wmMsg"></div>
+  </div>
+
+  <div class="wm-res" id="wmRes">
+    <div class="rh">快照索引：<b>十二中吧</b><span class="c">共 6 次成功抓取　·　最近一次 2015-03-17</span></div>
+
+    <div class="wm-cap ok">
+      <span class="dot"></span>
+      <span class="dt">2015-03-17 23:41</span>
+      <span class="what">列表页 &amp; 主题页　·　只读存档</span>
+      <span class="st">可查看</span>
+      <span><a href="index.html">进入快照</a></span>
+    </div>
+
+    <div class="wm-cap dead">
+      <span class="dot"></span>
+      <span class="dt">2015-03-16 22:40</span>
+      <span class="what">列表页</span>
+      <span class="st">内容为空</span>
+    </div>
+
+    <div class="wm-cap dead">
+      <span class="dot"></span>
+      <span class="dt">2014-12-03 04:20</span>
+      <span class="what">列表页</span>
+      <span class="st">内容为空</span>
+    </div>
+
+    <div class="wm-cap dead">
+      <span class="dot"></span>
+      <span class="dt">2014-06-09 08:30</span>
+      <span class="what">列表页</span>
+      <span class="st">内容为空</span>
+    </div>
+
+    <div class="wm-cap dead">
+      <span class="dot"></span>
+      <span class="dt">2013-11-20 16:50</span>
+      <span class="what">列表页</span>
+      <span class="st">内容为空</span>
+    </div>
+
+    <div class="wm-cap dead">
+      <span class="dot"></span>
+      <span class="dt">2009-08-04 11:12</span>
+      <span class="what">站点目录</span>
+      <span class="st">内容为空</span>
+    </div>
+  </div>
+
+  <div class="wm-foot">
+    本计划由志愿者维护，只索引公开可访问的网页，不存储任何登录态内容。<br>
+    本页为独立创作的虚构作品，与任何真实存档项目、平台或个人无关。
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var input = document.getElementById('wmInput');
+  var btn = document.getElementById('wmBtn');
+  var msg = document.getElementById('wmMsg');
+  var res = document.getElementById('wmRes');
+  var done = false;
+
+  // 能命中的写法
+  var KEYS = ['十二中吧', '十二中', 'shierzhong', '12中吧', '十二中 吧'];
+  function norm(t) {
+    return String(t || '').replace(/[\s\u3000]+/g, '').toLowerCase();
+  }
+  function hit() {
+    var v = norm(input.value);
+    if (!v) return false;
+    for (var i = 0; i < KEYS.length; i++) {
+      if (v.indexOf(norm(KEYS[i])) > -1) return true;
+    }
+    return false;
+  }
+
+  function run() {
+    if (done) return;
+    var v = input.value.trim();
+    if (!v) { msg.className = 'wm-msg bad'; msg.textContent = '请输入网址或站点名称。'; input.focus(); return; }
+    if (hit()) {
+      msg.className = 'wm-msg ok';
+      msg.textContent = '找到 6 条快照记录。';
+      res.classList.add('on');
+      done = true;
+      btn.disabled = true;
+      input.disabled = true;
+      res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      msg.className = 'wm-msg bad';
+      msg.textContent = '未找到与「' + v.replace(/[<>&]/g, '') + '」匹配的存档条目。';
+    }
+  }
+
+  btn.addEventListener('click', run);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+  input.focus();
+})();
+</script>
+</body>
+</html>

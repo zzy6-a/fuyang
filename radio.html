@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>频道存档_十二中吧_网页存档</title>
+<!-- 磁带转录 2015-03-16 · 963 kHz 段有可辨信号 -->
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <span class="logo"><i>吧</i>旧版存档</span>
+  <a href="index.html">贴吧首页</a>
+  <a href="index.html">十二中吧</a>
+  <a href="search.html">站内搜索</a>
+  <span class="sp"></span>
+  <span class="meta">只读模式</span>
+</div></div>
+
+<div class="archbar"><div class="wrap">
+  <span class="dot"></span>
+  本页为 <b>2015-03-17 23:41</b> 的网页快照，部分内容已损坏或缺失。
+  <span class="sp"></span>
+  <span class="mono">SNAPSHOT S17-20150317-0031</span>
+</div></div>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">十二中吧</a> &rsaquo; 外部资料 &rsaquo; 磁带转录存档</div>
+
+  <div class="radiowrap">
+    <div class="screen" id="screen">
+      <div>滏阳人民广播电台 · 磁带转录存档</div>
+      <div class="dim">转录时间 2015-03-16 · 转录人 张守义</div>
+      <div id="screenMsg">— 未选频道 —</div>
+    </div>
+
+    <div class="freqs" id="freqs">
+      <div class="f" data-k="612">612 kHz<br><span style="font-size:10px">中央台</span></div>
+      <div class="f" data-k="747">747 kHz<br><span style="font-size:10px">河北台</span></div>
+      <div class="f" data-k="828">828 kHz<br><span style="font-size:10px">邯郸台</span></div>
+      <div class="f" data-k="963">963 kHz<br><span style="font-size:10px">？？？</span></div>
+      <div class="f" data-k="1071">1071 kHz<br><span style="font-size:10px">空频</span></div>
+      <div class="f" data-k="1206">1206 kHz<br><span style="font-size:10px">音乐台</span></div>
+    </div>
+
+    <div class="knobs">
+      <button class="play" id="playBtn" disabled>▶ 播 放</button>
+      <span class="led" id="led"></span>
+      <button class="play" id="stopBtn" style="background:#4a4132;border-color:#5c5140;color:#c9bda6" disabled>■ 停 止</button>
+      <span class="hint">音量请调低 —— 录像带有底噪</span>
+    </div>
+  </div>
+
+  <div class="panel"><div class="ph">转录说明</div>
+    <div class="pb" style="line-height:2.1;font-size:12px;color:#777">
+      磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。
+    </div>
+    <div class="pb" style="border-top:1px solid #eef2f7;padding-top:12px;font-size:12px;color:#777;line-height:2">
+      转录人备注：原件已随磁带一并交回。相关受限条目见 <a href="gate.html?g=beihai">档案索引</a>。
+    </div>
+  </div>
+
+
+<script>
+(function(){
+  var ac=null, nodes=[], playing=false, cur=null;
+  var MORSE={B:'-...',E:'.',I:'..',H:'....',A:'.-'};
+  var WORD='BEIHAI';
+  var DOT=0.09, DASH=0.27, GAP=0.09, CGAP=0.27, WGAP=0.63;
+
+  function ctx(){ if(!ac){ var C=window.AudioContext||window.webkitAudioContext; ac=new C(); } return ac; }
+  function tone(at,dur,freq,gain){
+    var c=ctx(), o=c.createOscillator(), g=c.createGain();
+    o.type='sine'; o.frequency.value=freq||700;
+    g.gain.setValueAtTime(0,at);
+    g.gain.linearRampToValueAtTime(gain||0.18,at+0.006);
+    g.gain.setValueAtTime(gain||0.18,at+dur-0.006);
+    g.gain.linearRampToValueAtTime(0,at+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(at); o.stop(at+dur+0.01);
+    nodes.push(o);
+  }
+  function noise(dur){
+    var c=ctx(), len=Math.floor(c.sampleRate*dur);
+    var buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++) d[i]=(Math.random()*2-1)*0.05;
+    var s=c.createBufferSource(), g=c.createGain();
+    s.buffer=buf; g.gain.value=0.5; s.connect(g); g.connect(c.destination); s.start();
+    nodes.push(s);
+  }
+  function stopAll(){
+    playing=false;
+    nodes.forEach(function(n){ try{ n.stop(); }catch(e){} });
+    nodes=[]; document.getElementById('led').classList.remove('on');
+    document.getElementById('playBtn').disabled=!cur;
+    document.getElementById('stopBtn').disabled=true;
+  }
+  function play(){
+    if(playing||!cur) return;
+    var c=ctx(); if(c.state==='suspended') c.resume();
+    playing=true;
+    document.getElementById('led').classList.add('on');
+    document.getElementById('playBtn').disabled=true;
+    document.getElementById('stopBtn').disabled=false;
+    var t=c.currentTime+0.1;
+    var msg=document.getElementById('screenMsg');
+    if(cur==='963'){
+      msg.innerHTML='发现载波 · 正在解码…';
+      for(var w=0; w<3; w++){
+        for(var i=0;i<WORD.length;i++){
+          var code=MORSE[WORD[i]];
+          for(var j=0;j<code.length;j++){
+            var d = code[j]==='.' ? DOT : DASH;
+            tone(t, d, 720, 0.16);
+            t += d + GAP;
+          }
+          t += CGAP - GAP;
+        }
+        t += WGAP;
+      }
+    } else if(cur==='1071'||cur==='612'){
+      msg.textContent='静默。这个频段什么都没有。';
+    } else {
+      msg.textContent='底噪。磁带这一段的信号已经完全糊了。';
+      noise(3.0);
+      t+=3.0;
+    }
+    var total=(t-c.currentTime)*1000+200;
+    setTimeout(function(){ stopAll(); }, total);
+  }
+  document.getElementById('freqs').addEventListener('click',function(e){
+    var el=e.target.closest('.f'); if(!el) return;
+    stopAll();
+    [].forEach.call(document.querySelectorAll('.f'),function(x){x.classList.remove('on');});
+    el.classList.add('on');
+    cur=el.getAttribute('data-k');
+    document.getElementById('screenMsg').innerHTML='已调至 <b>'+cur+' kHz</b> · 按播放键试听。';
+    document.getElementById('playBtn').disabled=false;
+  });
+  document.getElementById('playBtn').addEventListener('click',play);
+  document.getElementById('stopBtn').addEventListener('click',stopAll);
+})();
+</script>
+
+  <div class="footer">
+    <div class="disc">本页内容为虚构创作，与任何真实机构、个人无关。</div>
+    <div>十二中吧 · 网页存档（只读） · 快照 S17-20150317-0031</div>
+  </div>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

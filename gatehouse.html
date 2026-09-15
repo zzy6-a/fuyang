@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>门卫登记管理系统 · 人员出入登记（快照）</title>
+<!-- 门卫登记系统快照 · 2003-06-08 22:07 与 2014-06-09 00:38 两条记录备注相同 -->
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="gh" id="ghSystem">  <div class="gh-top">
+    <div class="logo">十二中 · <b>门卫登记管理系统</b></div>
+    <div class="sp"></div>
+    <div class="user">当前操作员：<em>张守义</em>（工号 B-0117）　|　值班时间 18:00 – 次日 06:00　|　<a href="#" id="ghLogout">退出</a></div>
+  </div>
+  <div class="gh-wrap">
+    <div class="gh-menu">
+      <div class="grp">常 用</div>
+      <a href="gatehouse-log.html" class="">值班日志</a>
+      <a href="gatehouse.html" class="on">人员出入登记</a>
+      <a href="#" class="">外来人员登记</a>
+      <a href="#" class="">物品放行</a>
+      <a href="#" class="">系统设置</a>
+    </div>
+    <div class="gh-main">
+      <div class="gh-crumb">首页 &nbsp;/&nbsp; 人员出入登记 &nbsp;/&nbsp; <b>全部记录</b></div>
+
+      <div class="gh-card" style="display:flex;gap:26px;padding:14px 18px">
+        <div><div style="color:#8c8c8c;font-size:12px">本月出入</div><div style="font-size:22px;font-weight:700;color:#262626">1,204</div></div>
+        <div><div style="color:#8c8c8c;font-size:12px">未归</div><div style="font-size:22px;font-weight:700;color:#f5222d">1</div></div>
+        <div><div style="color:#8c8c8c;font-size:12px">异常告警</div><div style="font-size:22px;font-weight:700;color:#faad14">2</div></div>
+        <div style="margin-left:auto;align-self:center;color:#8c8c8c;font-size:12px">
+          数据范围：2001-03-01 至今　·　共 <b>41,208</b> 条
+        </div>
+      </div>
+
+      <div class="gh-card">
+        <div class="ct">人员出入登记　<span class="kv">按时间倒序　·　显示最近 11 条</span><span class="sp"></span>
+          <span class="kv">筛选：全部班级 ▾　全部方向 ▾</span></div>
+        <table>
+          <thead><tr>
+            <th style="width:150px">登记时间</th><th style="width:110px">姓名</th><th style="width:100px">班级/单位</th>
+            <th>事由</th><th style="width:70px">方向</th><th style="width:96px">随身物品</th>
+            <th style="width:90px">值班人</th><th style="width:70px">状态</th>
+          </tr></thead>
+          <tbody>
+            <tr class="">
+              <td class="mono tm">2014-06-10 12:03</td><td>邻村的学生</td><td>外来</td><td>来访 · 找高三(2)班</td>
+              <td>入校</td><td>—</td><td>张守义</td><td><span class="tag ok">已放行</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2014-06-09 08:31</td><td>天沨不度</td><td>高三(2)班</td><td>来访</td>
+              <td>入校</td><td>书包</td><td>张守义</td><td><span class="tag ok">已放行</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2014-06-09 06:12</td><td>白马非马</td><td>高三(2)班</td><td>来访</td>
+              <td>入校</td><td>书包</td><td>张守义</td><td><span class="tag ok">已放行</span></td>
+            </tr>
+            <tr class="hlrow">
+              <td class="mono tm">2014-06-09 00:38</td><td>周嘉晚</td><td>高三(2)班</td><td>外出</td>
+              <td>出校</td><td><b>未带行李</b></td><td>张守义</td><td><span class="tag bad">未归</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2014-06-08 22:15</td><td>周嘉晚</td><td>高三(2)班</td><td>校内逗留</td>
+              <td>—</td><td>—</td><td>张守义</td><td><span class="tag warn">关注</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2014-05-28 15:20</td><td>学生家长（22 人）</td><td>外来</td><td>家长会</td>
+              <td>入校</td><td>—</td><td>王秀云</td><td><span class="tag ok">已放行</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2014-04-02 09:05</td><td>施工人员（3 人）</td><td>外来</td><td>监控系统改造</td>
+              <td>入校</td><td>工具包</td><td>张守义</td><td><span class="tag ok">已放行</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2014-03-11 20:41</td><td>周嘉晚</td><td>高三(2)班</td><td>请假外出 · 购书</td>
+              <td>出校</td><td>书包</td><td>张守义</td><td><span class="tag ok">已放行</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2003-06-09 09:40</td><td>陈某某（家属）</td><td>外来</td><td>来访 · 找高三(1)班</td>
+              <td>入校</td><td>—</td><td>张守义</td><td><span class="tag warn">关注</span></td>
+            </tr>
+            <tr class="hlrow">
+              <td class="mono tm">2003-06-08 22:07</td><td>陈知遥</td><td>高三(1)班</td><td>外出</td>
+              <td>出校</td><td><b>未带行李</b></td><td>张守义</td><td><span class="tag bad">未归</span></td>
+            </tr>
+            <tr class="">
+              <td class="mono tm">2003-06-08 21:55</td><td>陈知遥</td><td>高三(1)班</td><td>校内逗留</td>
+              <td>—</td><td>—</td><td>张守义</td><td><span class="tag warn">关注</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="gh-card">
+        <div class="ct">系统备注</div>
+        <div class="note">
+          ① 本系统仅记录经门卫<b>人工登记</b>的出入。2008 年 6 月以前的记录由纸质登记本补录，可能存在缺项或时间误差。<br>
+          ② 「未带行李」为值班人员在登记时的目视判断，非强制项，仅作参考。<br>
+          ③ 学生非正常时段外出须由值班人员核实并电话通知班主任。2003 年 6 月及 2014 年 6 月的两条记录<b>均未执行该流程</b>，原因栏为空。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gh-main" style="padding:0 20px 18px">
+    <div class="gh-card">
+      <div class="ct">相关档案</div>
+      <div style="font-size:13px;line-height:2.2">
+        <a href="school.html" style="color:#1890ff">学校官网 · 保卫科值班人员名单</a><br>
+        <span style="color:#8c8c8c">《滏阳日报》缩微胶片 —— 外部资料，可在检索中查找</span><br>
+        <a href="gate.html?g=zhang" style="color:#1890ff">站内信导出记录 —— 受限档案，需核对后查看</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="gh-foot">
+    <span>门卫登记管理系统 v1.4.2　·　数据截止 2015-03-17 23:41　·　操作员 张守义</span>
+    <span class="sp"></span>
+    <span>本页为校内网络页面快照</span>
+  </div>
+</div>
+  <div class="footer" style="margin-top:16px">
+    <div class="disc">本页内容为虚构创作，与任何真实机构、个人无关。</div>
+  </div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
