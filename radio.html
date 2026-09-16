@@ -69,7 +69,7 @@
 
 <script>
 (function(){
-  var ac=null, nodes=[], playing=false, cur=null, timers=[];
+  var ac=null, nodes=[], playing=false, cur=null, timers=[], segs=[], tickId=0;
   var MORSE={B:'-...',E:'.',I:'..',H:'....',A:'.-'};
   var WORD='BEIHAI';
   // 放慢到原来的约 1.8 倍，留足抄收时间
@@ -115,6 +115,7 @@
 
   function stopAll(){
     playing=false; clearTimers();
+    if(tickId){ clearInterval(tickId); tickId=0; }
     nodes.forEach(function(n){ try{ n.stop(); }catch(e){} });
     nodes=[]; document.getElementById('led').classList.remove('on');
     document.getElementById('playBtn').disabled=!cur;
@@ -136,35 +137,53 @@
     if(cur==='963'){
       tapeReset();
       msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在播送…';
+      // 声音从扬声器出来，比音频时钟晚一截（蓝牙耳机可能上百毫秒）。
+      // 画面要跟「听到的时刻」对齐，所以这里先量出设备输出延迟。
+      var lat = Math.min(0.4, Math.max(0, c.outputLatency || c.baseLatency || 0));
       var t0=c.currentTime;
-      for(var w=0; w<1; w++){
-        for(var i=0;i<WORD.length;i++){
-          var code=MORSE[WORD[i]];
-          var gStart=t, gEnd;
-          for(var j=0;j<code.length;j++){
-            var isDot = code[j]==='.';
-            var d = isDot ? DOT : DASH;
-            tone(t, d, 720, 0.15);
-            t += d + GAP;
-          }
-          gEnd = t + (CGAP - GAP);   // 高亮持续到组与组之间的停顿结束
-          if(w===0){
-            (function(ii,a,b,base){
-              later((a-base)*1000, function(){
-                var g=document.getElementById('grp'+ii);
-                if(g) g.classList.add('now');
-              });
-              later((b-base)*1000, function(){
-                var g=document.getElementById('grp'+ii);
-                if(g){ g.classList.remove('now'); g.classList.add('done'); }
-              });
-            })(i, gStart, gEnd, t0);
-          }
-          t += CGAP - GAP;
+      // 双时钟：音频时钟是主时钟（画面才能和声音对齐），
+      // 但有些设备（没有输出设备、上下文被挂起）它的 currentTime 会一直停在原地，
+      // 那时候退回墙上时钟，至少保证画面还能往前走。
+      var wall0 = performance.now(), clockMode = null;
+      function elapsed(){
+        var a = ctx().currentTime - t0;
+        var w = (performance.now() - wall0) / 1000;
+        if(clockMode === null){
+          if(a > 0.05){ clockMode = 'audio'; }
+          else if(w > 0.25){ clockMode = 'wall'; }
         }
-        t += WGAP;
+        return clockMode === 'wall' ? w : a;
       }
-      later((t-t0)*1000+150, function(){
+      segs=[];
+      for(var i=0;i<WORD.length;i++){
+        var code=MORSE[WORD[i]];
+        var gStart=t, gEnd;
+        for(var j=0;j<code.length;j++){
+          var isDot = code[j]==='.';
+          var d = isDot ? DOT : DASH;
+          tone(t, d, 720, 0.15);
+          t += d + GAP;
+        }
+        gEnd = t + (CGAP - GAP);   // 高亮持续到组与组之间的停顿结束
+        segs.push({ i:i, s:gStart, e:gEnd });
+        t += CGAP - GAP;
+      }
+      // 每 40ms 读一次时钟来推进高亮。
+      // 用轮询而不是 requestAnimationFrame：rAF 跟渲染帧绑定，
+      // 标签页切到后台就停了；这里只需要在几百毫秒的尺度上切换一个 class，40ms 足够，
+      // 而且后台也能继续走。
+      tickId = setInterval(function(){
+        if(!playing || cur!=='963'){ clearInterval(tickId); tickId=0; return; }
+        var heard = t0 + elapsed() - (clockMode === 'wall' ? 0 : lat);   // 此刻耳朵里听到的是音频时间轴上的哪一刻
+        for(var k=0;k<segs.length;k++){
+          var el=document.getElementById('grp'+segs[k].i);
+          if(!el) continue;
+          if(heard >= segs[k].e){ el.classList.remove('now'); el.classList.add('done'); }
+          else if(heard >= segs[k].s){ el.classList.add('now'); el.classList.remove('done'); }
+          else { el.classList.remove('now'); el.classList.remove('done'); }
+        }
+      }, 40);
+      later((t - t0 + lat)*1000 + 200, function(){
         msg.innerHTML='播送结束 · 共 <b>6 组</b>。';
         var note=document.createElement('div');
         note.style.cssText='margin-top:9px;font-size:11px;color:#7fbf7f;letter-spacing:0';
@@ -177,7 +196,8 @@
       msg.textContent='底噪。磁带这一段已经完全糊了。';
       noise(1.6); t+=1.6;
     }
-    var total=(t-c.currentTime)*1000+400;
+    var tail = (c.outputLatency || c.baseLatency || 0);
+    var total=(t-c.currentTime+tail)*1000+500;
     later(total, function(){ stopAll(); });
   }
 
