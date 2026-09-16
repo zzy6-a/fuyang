@@ -1036,11 +1036,11 @@ body.wm-body{background:#f2f4f7}
    =========================================================== */
 
 
-/* 电台：组位指示（只在组间停顿的正中间切换，容差 ±CGAP/2） */
-.radiowrap .tapeout{margin-top:13px;padding-top:11px;border-top:1px dashed #2c3a24;min-height:28px;line-height:1}
-.radiowrap .tapeout .grp{display:inline-block;min-width:26px;margin:0 8px 6px 0;padding:3px 0;text-align:center;
-  border:1px solid #2c3a24;border-radius:2px;color:#527a52;font:12px/1.2 Consolas,"Courier New",monospace;
-  transition:background .18s,color .18s,border-color .18s}
-.radiowrap .tapeout .grp.done{color:#a9dca9;border-color:#3f5f3a;background:rgba(120,220,120,.07)}
-.radiowrap .tapeout .grp.now{color:#eaffea;border-color:#7fbf7f;background:rgba(120,220,120,.2);
-  box-shadow:0 0 10px rgba(150,255,150,.35)}
+/* 电台：组位方块（切换点在组间停顿正中，容差 ±CGAP/2；无编号、无组数） */
+.radiowrap .tapeout{margin-top:13px;padding-top:11px;border-top:1px dashed #2c3a24;height:12px;line-height:0}
+.radiowrap .tapeout .grp{display:inline-block;width:34px;height:12px;margin:0 8px 0 0;border-radius:2px;
+  border:1px solid #2c3a24;background:transparent;
+  transition:background .18s,border-color .18s,box-shadow .18s}
+.radiowrap .tapeout .grp.done{border-color:#4a6f45;background:rgba(120,220,120,.14)}
+.radiowrap .tapeout .grp.now{border-color:#a8e6a8;background:rgba(150,240,150,.55);
+  box-shadow:0 0 12px rgba(160,255,160,.55)}

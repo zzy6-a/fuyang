@@ -58,8 +58,8 @@
   <div class="panel"><div class="ph">转录说明</div>
     <div class="pb" style="line-height:2.1;font-size:12px;color:#777">
       磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。<br>
-      可辨信号集中在一段载波上：<b>共 6 组，短长交替，播送一遍</b>。找到它。<br>
-      播放时下方方框会指示当前听到的是第几组。
+      可辨信号集中在一段载波上：<b>短长交替，播送一遍</b>。找到它。<br>
+      播放时下方方框会跟着信号走。
     </div>
     <div class="pb" style="border-top:1px solid #eef2f7;padding-top:12px;font-size:12px;color:#777;line-height:2">
       转录人备注：原件已随磁带一并交回。相关受限条目见 <a href="gate.html?g=beihai">档案索引</a>。
@@ -109,7 +109,6 @@
     for(var i=0;i<WORD.length;i++){
       var d=document.createElement('span');
       d.className='grp'; d.id='grp'+i;
-      d.textContent=(i+1);
       tape.appendChild(d);
     }
   }
@@ -138,7 +137,7 @@
 
     if(cur==='963'){
       tapeReset();
-      msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在播送…';
+      msg.innerHTML='检测到载波 · 正在播送…';
 
       // 设备输出延迟：声音到耳朵比音频时钟晚一截。取浏览器估计值做补偿，
       // 估不准也没关系 —— 切换点在静音中间，有 ±SW 的容差兜着。
@@ -190,7 +189,7 @@
       }, 40);
 
       later((t - t0)*1000 + 200, function(){
-        msg.innerHTML='播送结束 · 共 <b>6 组</b>。';
+        msg.innerHTML='播送结束。';
         var note=document.createElement('div');
         note.style.cssText='margin-top:9px;font-size:11px;color:#7fbf7f;letter-spacing:0';
         note.textContent='只播一遍。需要再听就再按一次播放。';
