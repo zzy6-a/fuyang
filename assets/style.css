@@ -1034,10 +1034,4 @@ body.wm-body{background:#f2f4f7}
 /* ===========================================================
    电台：抄收条 + 摩斯对照表
    =========================================================== */
-.radiowrap .tapeout{margin-top:13px;padding-top:11px;border-top:1px dashed #2c3a24;min-height:34px;
-  font-size:16px;letter-spacing:3px;color:#b9e8b9;word-break:break-all;line-height:1.9}
-.radiowrap .tapeout .grp{display:inline-block;margin:0 9px 6px 0;padding:1px 4px;border-radius:2px;color:#7fbf7f}
-.radiowrap .tapeout .grp.done{color:#e4ffe4;background:rgba(120,220,120,.12)}
-.radiowrap .tapeout .grp.now{color:#fff;text-shadow:0 0 9px rgba(150,255,150,.95)}
-.radiowrap .tapeout .idx{font-size:9px;letter-spacing:0;color:#4e7a4e;vertical-align:super}
 
