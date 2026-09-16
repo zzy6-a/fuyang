@@ -33,6 +33,7 @@
       <div>滏阳人民广播电台 · 磁带转录存档</div>
       <div class="dim">转录时间 2015-03-16 · 转录人 张守义</div>
       <div id="screenMsg">— 未选频道 —</div>
+      <div class="tapeout" id="tapeout"></div>
     </div>
 
     <div class="freqs" id="freqs">
@@ -48,13 +49,33 @@
       <button class="play" id="playBtn" disabled>▶ 播 放</button>
       <span class="led" id="led"></span>
       <button class="play" id="stopBtn" style="background:#4a4132;border-color:#5c5140;color:#c9bda6" disabled>■ 停 止</button>
+      <button class="play" id="clearBtn" style="background:#4a4132;border-color:#5c5140;color:#c9bda6">清 空</button>
       <span class="hint">音量请调低 —— 录像带有底噪</span>
+    </div>
+  </div>
+
+
+  <div class="panel"><div class="ph">抄收对照表 · 摩尔斯电码</div>
+    <div class="pb" style="overflow-x:auto">
+      <table class="morse">
+      <tr><td><b>A</b><i>·—</i></td><td><b>B</b><i>—···</i></td><td><b>C</b><i>—·—·</i></td><td><b>D</b><i>—··</i></td><td><b>E</b><i>·</i></td><td><b>F</b><i>··—·</i></td></tr>
+      <tr><td><b>G</b><i>——·</i></td><td><b>H</b><i>····</i></td><td><b>I</b><i>··</i></td><td><b>J</b><i>·———</i></td><td><b>K</b><i>—·—</i></td><td><b>L</b><i>·—··</i></td></tr>
+      <tr><td><b>M</b><i>——</i></td><td><b>N</b><i>—·</i></td><td><b>O</b><i>———</i></td><td><b>P</b><i>·——·</i></td><td><b>Q</b><i>——·—</i></td><td><b>R</b><i>·—·</i></td></tr>
+      <tr><td><b>S</b><i>···</i></td><td><b>T</b><i>—</i></td><td><b>U</b><i>··—</i></td><td><b>V</b><i>···—</i></td><td><b>W</b><i>·——</i></td><td><b>X</b><i>—··—</i></td></tr>
+      <tr><td><b>Y</b><i>—·——</i></td><td><b>Z</b><i>——··</i></td><td><b>0</b><i>—————</i></td><td><b>1</b><i>·————</i></td><td><b>2</b><i>··———</i></td><td><b>3</b><i>···——</i></td></tr>
+      <tr><td><b>4</b><i>····—</i></td><td><b>5</b><i>·····</i></td><td><b>6</b><i>—····</i></td><td><b>7</b><i>——···</i></td><td><b>8</b><i>———··</i></td><td><b>9</b><i>————·</i></td></tr>
+      </table>
+      <div class="morse-tip">
+        短音为「·」（点），长音为「—」（划）。<b>同一组内</b>点划之间短停顿；<b>组与组之间</b>有明显长停顿。<br>
+        逐组查出字母、连起来读 —— 是一个地名的汉语拼音。
+      </div>
     </div>
   </div>
 
   <div class="panel"><div class="ph">转录说明</div>
     <div class="pb" style="line-height:2.1;font-size:12px;color:#777">
-      磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。
+      磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。<br>
+      可辨信号集中在一段载波上：<b>共 6 组，短长交替，循环播送</b>。找到它，用上面的对照表逐组查。
     </div>
     <div class="pb" style="border-top:1px solid #eef2f7;padding-top:12px;font-size:12px;color:#777;line-height:2">
       转录人备注：原件已随磁带一并交回。相关受限条目见 <a href="gate.html?g=beihai">档案索引</a>。
@@ -64,18 +85,19 @@
 
 <script>
 (function(){
-  var ac=null, nodes=[], playing=false, cur=null;
+  var ac=null, nodes=[], playing=false, cur=null, timers=[];
   var MORSE={B:'-...',E:'.',I:'..',H:'....',A:'.-'};
   var WORD='BEIHAI';
-  var DOT=0.09, DASH=0.27, GAP=0.09, CGAP=0.27, WGAP=0.63;
+  // 放慢到原来的约 1.8 倍，留足抄收时间
+  var DOT=0.16, DASH=0.48, GAP=0.16, CGAP=0.55, WGAP=0.9;
 
   function ctx(){ if(!ac){ var C=window.AudioContext||window.webkitAudioContext; ac=new C(); } return ac; }
   function tone(at,dur,freq,gain){
     var c=ctx(), o=c.createOscillator(), g=c.createGain();
-    o.type='sine'; o.frequency.value=freq||700;
+    o.type='sine'; o.frequency.value=freq||720;
     g.gain.setValueAtTime(0,at);
-    g.gain.linearRampToValueAtTime(gain||0.18,at+0.006);
-    g.gain.setValueAtTime(gain||0.18,at+dur-0.006);
+    g.gain.linearRampToValueAtTime(gain||0.16,at+0.008);
+    g.gain.setValueAtTime(gain||0.16,at+dur-0.008);
     g.gain.linearRampToValueAtTime(0,at+dur);
     o.connect(g); g.connect(c.destination);
     o.start(at); o.stop(at+dur+0.01);
@@ -85,17 +107,45 @@
     var c=ctx(), len=Math.floor(c.sampleRate*dur);
     var buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
     for(var i=0;i<len;i++) d[i]=(Math.random()*2-1)*0.05;
-    var s=c.createBufferSource(), g=c.createGain();
-    s.buffer=buf; g.gain.value=0.5; s.connect(g); g.connect(c.destination); s.start();
-    nodes.push(s);
+    var src=c.createBufferSource(), g=c.createGain();
+    src.buffer=buf; g.gain.value=0.45; src.connect(g); g.connect(c.destination); src.start();
+    nodes.push(src);
   }
+  function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+  function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+
+  var tape = document.getElementById('tapeout');
+  function tapeReset(){
+    tape.innerHTML='';
+    for(var i=0;i<WORD.length;i++){
+      var d=document.createElement('span');
+      d.className='grp'; d.id='grp'+i;
+      d.innerHTML='<span class="idx">'+(i+1)+'</span>&nbsp;';
+      tape.appendChild(d);
+    }
+  }
+  function tapePut(i, ch, now){
+    var g=document.getElementById('grp'+i);
+    if(!g) return;
+    var sp=document.createElement('span');
+    sp.textContent=ch;
+    g.appendChild(sp);
+    if(now){ g.classList.add('now'); }
+  }
+  function tapeDone(i){
+    var g=document.getElementById('grp'+i);
+    if(g){ g.classList.remove('now'); g.classList.add('done'); }
+  }
+
   function stopAll(){
-    playing=false;
+    playing=false; clearTimers();
     nodes.forEach(function(n){ try{ n.stop(); }catch(e){} });
     nodes=[]; document.getElementById('led').classList.remove('on');
     document.getElementById('playBtn').disabled=!cur;
     document.getElementById('stopBtn').disabled=true;
+    [].forEach.call(document.querySelectorAll('.tapeout .grp'),function(g){g.classList.remove('now');});
   }
+
   function play(){
     if(playing||!cur) return;
     var c=ctx(); if(c.state==='suspended') c.resume();
@@ -103,43 +153,76 @@
     document.getElementById('led').classList.add('on');
     document.getElementById('playBtn').disabled=true;
     document.getElementById('stopBtn').disabled=false;
-    var t=c.currentTime+0.1;
+    tape.innerHTML='';
+    var t=c.currentTime+0.35;
     var msg=document.getElementById('screenMsg');
+
     if(cur==='963'){
-      msg.innerHTML='发现载波 · 正在解码…';
-      for(var w=0; w<3; w++){
+      tapeReset();
+      msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在抄收…';
+      var t0=c.currentTime;
+      for(var w=0; w<2; w++){
         for(var i=0;i<WORD.length;i++){
           var code=MORSE[WORD[i]];
           for(var j=0;j<code.length;j++){
-            var d = code[j]==='.' ? DOT : DASH;
-            tone(t, d, 720, 0.16);
+            var isDot = code[j]==='.';
+            var d = isDot ? DOT : DASH;
+            var ch = isDot ? '·' : '—';
+            tone(t, d, 720, 0.15);
+            if(w===0){
+              (function(ii,cc,at){
+                later((at-t0)*1000, function(){ tapePut(ii,cc,true); });
+                later((at-t0)*1000 + d*1000, function(){
+                  var g=document.getElementById('grp'+ii);
+                  if(g) g.classList.remove('now');
+                });
+              })(i, ch, t);
+            }
             t += d + GAP;
+          }
+          if(w===0){
+            (function(ii,at){ later((at-t0)*1000, function(){ tapeDone(ii); }); })(i, t);
           }
           t += CGAP - GAP;
         }
         t += WGAP;
       }
+      later((t-t0)*1000+150, function(){
+        msg.innerHTML='抄收完成 · <b>6 组</b>。用下方对照表逐组比对 —— 拼出来是一个地名（汉语拼音）。';
+        var note=document.createElement('div');
+        note.style.cssText='margin-top:9px;font-size:11px;color:#7fbf7f;letter-spacing:0';
+        note.textContent='循环播送，可以再播一遍核对。';
+        msg.appendChild(note);
+      });
     } else if(cur==='1071'||cur==='612'){
       msg.textContent='静默。这个频段什么都没有。';
     } else {
-      msg.textContent='底噪。磁带这一段的信号已经完全糊了。';
-      noise(3.0);
-      t+=3.0;
+      msg.textContent='底噪。磁带这一段已经完全糊了。';
+      noise(1.6); t+=1.6;
     }
-    var total=(t-c.currentTime)*1000+200;
-    setTimeout(function(){ stopAll(); }, total);
+    var total=(t-c.currentTime)*1000+400;
+    later(total, function(){ stopAll(); });
   }
+
   document.getElementById('freqs').addEventListener('click',function(e){
     var el=e.target.closest('.f'); if(!el) return;
     stopAll();
     [].forEach.call(document.querySelectorAll('.f'),function(x){x.classList.remove('on');});
     el.classList.add('on');
     cur=el.getAttribute('data-k');
+    tape.innerHTML='';
     document.getElementById('screenMsg').innerHTML='已调至 <b>'+cur+' kHz</b> · 按播放键试听。';
     document.getElementById('playBtn').disabled=false;
   });
   document.getElementById('playBtn').addEventListener('click',play);
-  document.getElementById('stopBtn').addEventListener('click',stopAll);
+  document.getElementById('stopBtn').addEventListener('click',function(){
+    stopAll();
+    document.getElementById('screenMsg').textContent='已停止。';
+  });
+  document.getElementById('clearBtn').addEventListener('click',function(){
+    stopAll(); tape.innerHTML='';
+    document.getElementById('screenMsg').textContent='已清空抄收记录。';
+  });
 })();
 </script>
 
