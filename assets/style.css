@@ -1035,3 +1035,12 @@ body.wm-body{background:#f2f4f7}
    电台：抄收条 + 摩斯对照表
    =========================================================== */
 
+
+/* 电台：组位指示（只在组间停顿的正中间切换，容差 ±CGAP/2） */
+.radiowrap .tapeout{margin-top:13px;padding-top:11px;border-top:1px dashed #2c3a24;min-height:28px;line-height:1}
+.radiowrap .tapeout .grp{display:inline-block;min-width:26px;margin:0 8px 6px 0;padding:3px 0;text-align:center;
+  border:1px solid #2c3a24;border-radius:2px;color:#527a52;font:12px/1.2 Consolas,"Courier New",monospace;
+  transition:background .18s,color .18s,border-color .18s}
+.radiowrap .tapeout .grp.done{color:#a9dca9;border-color:#3f5f3a;background:rgba(120,220,120,.07)}
+.radiowrap .tapeout .grp.now{color:#eaffea;border-color:#7fbf7f;background:rgba(120,220,120,.2);
+  box-shadow:0 0 10px rgba(150,255,150,.35)}

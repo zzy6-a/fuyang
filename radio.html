@@ -33,6 +33,7 @@
       <div>滏阳人民广播电台 · 磁带转录存档</div>
       <div class="dim">转录时间 2015-03-16 · 转录人 张守义</div>
       <div id="screenMsg">— 未选频道 —</div>
+      <div class="tapeout" id="tapeout"></div>
     </div>
 
     <div class="freqs" id="freqs">
@@ -57,7 +58,8 @@
   <div class="panel"><div class="ph">转录说明</div>
     <div class="pb" style="line-height:2.1;font-size:12px;color:#777">
       磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。<br>
-      可辨信号集中在一段载波上：<b>共 6 组，短长交替，播送一遍</b>。找到它。
+      可辨信号集中在一段载波上：<b>共 6 组，短长交替，播送一遍</b>。找到它。<br>
+      播放时下方方框会指示当前听到的是第几组。
     </div>
     <div class="pb" style="border-top:1px solid #eef2f7;padding-top:12px;font-size:12px;color:#777;line-height:2">
       转录人备注：原件已随磁带一并交回。相关受限条目见 <a href="gate.html?g=beihai">档案索引</a>。
@@ -67,11 +69,16 @@
 
 <script>
 (function(){
-  var ac=null, nodes=[], playing=false, cur=null, timers=[];
+  var ac=null, nodes=[], playing=false, cur=null, timers=[], segs=[], tickId=0;
   var MORSE={B:'-...',E:'.',I:'..',H:'....',A:'.-'};
   var WORD='BEIHAI';
-  // 放慢过的速度：点 0.20s，划 0.62s，留足抄收时间
+  // 放慢过的速度：点 0.20s，划 0.62s
   var DOT=0.20, DASH=0.62, GAP=0.20, CGAP=0.72;
+  // 按下播放到第一个音之间的引线
+  var LEAD_IN=0.9;
+  // 切换点放在组间停顿的正中间：停顿长 CGAP，中点即提前 CGAP/2 切下一格。
+  // 这样只要时钟误差不超过 ±0.36s，切换动作都落在静音里，看不出来。
+  var SW=CGAP/2;
 
   function ctx(){ if(!ac){ var C=window.AudioContext||window.webkitAudioContext; ac=new C(); } return ac; }
   function tone(at,dur,freq,gain){
@@ -96,8 +103,20 @@
   function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
   function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
 
+  var tape = document.getElementById('tapeout');
+  function tapeReset(){
+    tape.innerHTML='';
+    for(var i=0;i<WORD.length;i++){
+      var d=document.createElement('span');
+      d.className='grp'; d.id='grp'+i;
+      d.textContent=(i+1);
+      tape.appendChild(d);
+    }
+  }
+
   function stopAll(){
     playing=false; clearTimers();
+    if(tickId){ clearInterval(tickId); tickId=0; }
     nodes.forEach(function(n){ try{ n.stop(); }catch(e){} });
     nodes=[];
     document.getElementById('led').classList.remove('on');
@@ -113,14 +132,35 @@
     document.getElementById('playBtn').disabled=true;
     document.getElementById('stopBtn').disabled=false;
 
-    var t=c.currentTime+0.35;
+    var t=c.currentTime+LEAD_IN;
     var t0=c.currentTime;
     var msg=document.getElementById('screenMsg');
 
     if(cur==='963'){
+      tapeReset();
       msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在播送…';
+
+      // 设备输出延迟：声音到耳朵比音频时钟晚一截。取浏览器估计值做补偿，
+      // 估不准也没关系 —— 切换点在静音中间，有 ±SW 的容差兜着。
+      var lat = Math.min(0.4, Math.max(0, c.outputLatency || c.baseLatency || 0));
+
+      // 双时钟：音频时钟是主时钟；若它一直不前进（没有输出设备），退回墙上时钟。
+      var wall0 = performance.now(), clockMode = null;
+      function elapsed(){
+        var a = ctx().currentTime - t0;
+        var w = (performance.now() - wall0)/1000;
+        if(clockMode === null){
+          if(a > 0.05){ clockMode='audio'; }
+          else if(w > 0.25){ clockMode='wall'; }
+        }
+        return clockMode === 'wall' ? w : a;
+      }
+
+      // 排声音，同时记下每一组的起始时刻
+      var starts=[];
       for(var i=0;i<WORD.length;i++){
         var code=MORSE[WORD[i]];
+        starts.push(t);
         for(var j=0;j<code.length;j++){
           var d = code[j]==='.' ? DOT : DASH;
           tone(t, d, 720, 0.15);
@@ -128,7 +168,28 @@
         }
         t += CGAP - GAP;
       }
-      later((t - t0)*1000 + 250, function(){
+
+      // 切换窗口：第 k 格 = [第 k 组起点 - SW, 第 k+1 组起点 - SW)
+      // 首尾相接，任意时刻恰好一格是「当前」。
+      segs=[];
+      for(var k=0;k<starts.length;k++){
+        var e = (k+1 < starts.length) ? starts[k+1] - SW : t - SW;
+        segs.push({ i:k, s:starts[k]-SW, e:e });
+      }
+
+      tickId = setInterval(function(){
+        if(!playing || cur!=='963'){ clearInterval(tickId); tickId=0; return; }
+        var heard = t0 + elapsed() - (clockMode==='wall' ? 0 : lat);
+        for(var n=0;n<segs.length;n++){
+          var el=document.getElementById('grp'+segs[n].i);
+          if(!el) continue;
+          if(heard >= segs[n].e){ el.classList.remove('now'); el.classList.add('done'); }
+          else if(heard >= segs[n].s){ el.classList.add('now'); el.classList.remove('done'); }
+          else { el.classList.remove('now'); el.classList.remove('done'); }
+        }
+      }, 40);
+
+      later((t - t0)*1000 + 200, function(){
         msg.innerHTML='播送结束 · 共 <b>6 组</b>。';
         var note=document.createElement('div');
         note.style.cssText='margin-top:9px;font-size:11px;color:#7fbf7f;letter-spacing:0';
@@ -152,6 +213,7 @@
     [].forEach.call(document.querySelectorAll('.f'),function(x){x.classList.remove('on');});
     el.classList.add('on');
     cur=el.getAttribute('data-k');
+    tape.innerHTML='';
     document.getElementById('screenMsg').innerHTML='已调至 <b>'+cur+' kHz</b> · 按播放键试听。';
     document.getElementById('playBtn').disabled=false;
   });
