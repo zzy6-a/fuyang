@@ -59,7 +59,7 @@
   <div class="panel"><div class="ph">转录说明</div>
     <div class="pb" style="line-height:2.1;font-size:12px;color:#777">
       磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。<br>
-      可辨信号集中在一段载波上：<b>共 6 组，短长交替，循环播送</b>。找到它。
+      可辨信号集中在一段载波上：<b>共 6 组，短长交替，播送一遍</b>。找到它。
     </div>
     <div class="pb" style="border-top:1px solid #eef2f7;padding-top:12px;font-size:12px;color:#777;line-height:2">
       转录人备注：原件已随磁带一并交回。相关受限条目见 <a href="gate.html?g=beihai">档案索引</a>。
@@ -137,7 +137,7 @@
       tapeReset();
       msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在播送…';
       var t0=c.currentTime;
-      for(var w=0; w<2; w++){
+      for(var w=0; w<1; w++){
         for(var i=0;i<WORD.length;i++){
           var code=MORSE[WORD[i]];
           var gStart=t, gEnd;
@@ -168,7 +168,7 @@
         msg.innerHTML='播送结束 · 共 <b>6 组</b>。';
         var note=document.createElement('div');
         note.style.cssText='margin-top:9px;font-size:11px;color:#7fbf7f;letter-spacing:0';
-        note.textContent='循环播送，可以再播一遍核对。';
+        note.textContent='只播一遍。需要核对就再按一次播放。';
         msg.appendChild(note);
       });
     } else if(cur==='1071'||cur==='612'){
