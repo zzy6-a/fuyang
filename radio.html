@@ -55,27 +55,11 @@
   </div>
 
 
-  <div class="panel"><div class="ph">抄收对照表 · 摩尔斯电码</div>
-    <div class="pb" style="overflow-x:auto">
-      <table class="morse">
-      <tr><td><b>A</b><i>·—</i></td><td><b>B</b><i>—···</i></td><td><b>C</b><i>—·—·</i></td><td><b>D</b><i>—··</i></td><td><b>E</b><i>·</i></td><td><b>F</b><i>··—·</i></td></tr>
-      <tr><td><b>G</b><i>——·</i></td><td><b>H</b><i>····</i></td><td><b>I</b><i>··</i></td><td><b>J</b><i>·———</i></td><td><b>K</b><i>—·—</i></td><td><b>L</b><i>·—··</i></td></tr>
-      <tr><td><b>M</b><i>——</i></td><td><b>N</b><i>—·</i></td><td><b>O</b><i>———</i></td><td><b>P</b><i>·——·</i></td><td><b>Q</b><i>——·—</i></td><td><b>R</b><i>·—·</i></td></tr>
-      <tr><td><b>S</b><i>···</i></td><td><b>T</b><i>—</i></td><td><b>U</b><i>··—</i></td><td><b>V</b><i>···—</i></td><td><b>W</b><i>·——</i></td><td><b>X</b><i>—··—</i></td></tr>
-      <tr><td><b>Y</b><i>—·——</i></td><td><b>Z</b><i>——··</i></td><td><b>0</b><i>—————</i></td><td><b>1</b><i>·————</i></td><td><b>2</b><i>··———</i></td><td><b>3</b><i>···——</i></td></tr>
-      <tr><td><b>4</b><i>····—</i></td><td><b>5</b><i>·····</i></td><td><b>6</b><i>—····</i></td><td><b>7</b><i>——···</i></td><td><b>8</b><i>———··</i></td><td><b>9</b><i>————·</i></td></tr>
-      </table>
-      <div class="morse-tip">
-        短音为「·」（点），长音为「—」（划）。<b>同一组内</b>点划之间短停顿；<b>组与组之间</b>有明显长停顿。<br>
-        逐组查出字母、连起来读 —— 是一个地名的汉语拼音。
-      </div>
-    </div>
-  </div>
 
   <div class="panel"><div class="ph">转录说明</div>
     <div class="pb" style="line-height:2.1;font-size:12px;color:#777">
       磁带原件为张守义 2003 年使用的一台红灯牌收音机外录。带体受潮，大部分频段只剩底噪。<br>
-      可辨信号集中在一段载波上：<b>共 6 组，短长交替，循环播送</b>。找到它，用上面的对照表逐组查。
+      可辨信号集中在一段载波上：<b>共 6 组，短长交替，循环播送</b>。找到它。
     </div>
     <div class="pb" style="border-top:1px solid #eef2f7;padding-top:12px;font-size:12px;color:#777;line-height:2">
       转录人备注：原件已随磁带一并交回。相关受限条目见 <a href="gate.html?g=beihai">档案索引</a>。
@@ -89,7 +73,7 @@
   var MORSE={B:'-...',E:'.',I:'..',H:'....',A:'.-'};
   var WORD='BEIHAI';
   // 放慢到原来的约 1.8 倍，留足抄收时间
-  var DOT=0.16, DASH=0.48, GAP=0.16, CGAP=0.55, WGAP=0.9;
+  var DOT=0.20, DASH=0.62, GAP=0.20, CGAP=0.72, WGAP=1.1;
 
   function ctx(){ if(!ac){ var C=window.AudioContext||window.webkitAudioContext; ac=new C(); } return ac; }
   function tone(at,dur,freq,gain){
@@ -124,14 +108,6 @@
       tape.appendChild(d);
     }
   }
-  function tapePut(i, ch, now){
-    var g=document.getElementById('grp'+i);
-    if(!g) return;
-    var sp=document.createElement('span');
-    sp.textContent=ch;
-    g.appendChild(sp);
-    if(now){ g.classList.add('now'); }
-  }
   function tapeDone(i){
     var g=document.getElementById('grp'+i);
     if(g){ g.classList.remove('now'); g.classList.add('done'); }
@@ -159,36 +135,37 @@
 
     if(cur==='963'){
       tapeReset();
-      msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在抄收…';
+      msg.innerHTML='检测到载波 · 共 <b>6 组</b> · 正在播送…';
       var t0=c.currentTime;
       for(var w=0; w<2; w++){
         for(var i=0;i<WORD.length;i++){
           var code=MORSE[WORD[i]];
+          var gStart=t, gEnd;
           for(var j=0;j<code.length;j++){
             var isDot = code[j]==='.';
             var d = isDot ? DOT : DASH;
-            var ch = isDot ? '·' : '—';
             tone(t, d, 720, 0.15);
-            if(w===0){
-              (function(ii,cc,at){
-                later((at-t0)*1000, function(){ tapePut(ii,cc,true); });
-                later((at-t0)*1000 + d*1000, function(){
-                  var g=document.getElementById('grp'+ii);
-                  if(g) g.classList.remove('now');
-                });
-              })(i, ch, t);
-            }
             t += d + GAP;
           }
+          gEnd = t + (CGAP - GAP);   // 高亮持续到组与组之间的停顿结束
           if(w===0){
-            (function(ii,at){ later((at-t0)*1000, function(){ tapeDone(ii); }); })(i, t);
+            (function(ii,a,b,base){
+              later((a-base)*1000, function(){
+                var g=document.getElementById('grp'+ii);
+                if(g) g.classList.add('now');
+              });
+              later((b-base)*1000, function(){
+                var g=document.getElementById('grp'+ii);
+                if(g){ g.classList.remove('now'); g.classList.add('done'); }
+              });
+            })(i, gStart, gEnd, t0);
           }
           t += CGAP - GAP;
         }
         t += WGAP;
       }
       later((t-t0)*1000+150, function(){
-        msg.innerHTML='抄收完成 · <b>6 组</b>。用下方对照表逐组比对 —— 拼出来是一个地名（汉语拼音）。';
+        msg.innerHTML='播送结束 · 共 <b>6 组</b>。';
         var note=document.createElement('div');
         note.style.cssText='margin-top:9px;font-size:11px;color:#7fbf7f;letter-spacing:0';
         note.textContent='循环播送，可以再播一遍核对。';
@@ -221,7 +198,7 @@
   });
   document.getElementById('clearBtn').addEventListener('click',function(){
     stopAll(); tape.innerHTML='';
-    document.getElementById('screenMsg').textContent='已清空抄收记录。';
+    document.getElementById('screenMsg').textContent='已清空。';
   });
 })();
 </script>

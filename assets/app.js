@@ -394,13 +394,12 @@
     'beihai': {
       title: '能看见海的地方',
       q: '老张删掉的那句话说得很清楚：往南走，一直走到能看见海的地方。<br>' +
-         '把那段信号抄下来。<br>' +
-         '<span style="color:#999;font-size:12px">（在 <a href="radio.html">频道存档</a> 里找那段载波。' +
-         '不用懂摩斯码 —— 那个页面自带对照表。）</span>',
+         '把那段载波听下来。<br>' +
+         '<span style="color:#999;font-size:12px">（在 <a href="radio.html">频道存档</a> 里找那段载波。）</span>',
       hashes: ['85f1ade458931289', '9f7b64a098a2002d'],
       ok: '对。就是这里。',
       then: 'final.html',
-      hint: '6 组点划，每组查一个字母，拼起来是一个地名的汉语拼音。'
+      hint: '6 组，短长交替 —— 这是摩尔斯电码，每组对应一个字母。'
     }
   };
 
